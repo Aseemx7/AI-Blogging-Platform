@@ -1,6 +1,6 @@
 import type { signupType } from "@aseem77/medium-common";
 import axios from "axios";
-import React, { useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BACKEND_URL } from "../config";
 
