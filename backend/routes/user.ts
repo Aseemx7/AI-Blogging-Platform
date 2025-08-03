@@ -85,3 +85,28 @@ userRouter.post("/signin", async (c) => {
     });
   }
 });
+
+userRouter.post("/find", async (c) => {
+  const { id } = await c.req.json();
+
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    const foundUser = await prisma.user.findFirst({
+      where: {
+        id,
+      },
+    });
+    if (!foundUser) {
+      return c.json({
+        msg: "User not found",
+      });
+    }
+    return c.json({ foundUser });
+  } catch (e) {
+    console.log("Something's Wrong");
+    return c.text("Error: " + e);
+  }
+});
