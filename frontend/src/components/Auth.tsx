@@ -3,9 +3,14 @@ import axios from "axios";
 import { useState, type ChangeEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BACKEND_URL } from "../config";
+import { useDispatch } from "react-redux";
+import { fetchUserInfo } from "./Me";
+import { userInfo } from "../features/user/userSlice";
 
 export default function Auth({ type }: { type: "signup" | "signin" }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [signupParams, setSignupParams] = useState<signupType>({
     name: "",
     email: "",
@@ -20,6 +25,19 @@ export default function Auth({ type }: { type: "signup" | "signin" }) {
       );
       const token = response.data;
       localStorage.setItem("token", token);
+
+      if (type === "signin") {
+        await fetchUserInfo(token, navigate, dispatch);
+      } else {
+        dispatch(
+          userInfo({ name: signupParams.name, email: signupParams.email })
+        );
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ name: signupParams.name, email: signupParams.email })
+        );
+      }
+
       navigate("/blogs");
     } catch (e) {
       alert("Request failed...");
